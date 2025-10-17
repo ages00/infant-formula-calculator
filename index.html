@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Infant Formula Calculator</title>
+<style>
+  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;max-width:720px;margin:18px auto;padding:12px;color:#111}
+  h1{font-size:1.25rem;margin-bottom:8px}
+  label{display:block;margin-top:10px;font-weight:600}
+  input[type=number]{width:100%;padding:8px;margin-top:6px;border:1px solid #ddd;border-radius:6px}
+  button{margin-top:12px;padding:10px 14px;border:0;background:#0066cc;color:white;border-radius:8px;cursor:pointer}
+  .results{margin-top:16px;padding:12px;border-radius:8px;background:#f7f9fc;border:1px solid #e6edf7}
+  .small{font-size:0.9rem;color:#555}
+  @media(min-width:680px){input[type=number]{max-width:240px}}
+</style>
+</head>
+<body>
+  <h1>Infant Formula Calculator</h1>
+  <form id="calcForm" onsubmit="return false;">
+    <label for="numBottles">Number of bottles</label>
+    <input id="numBottles" type="number" min="1" step="1" value="1" required />
+
+    <label for="volumeBottle">Volume per bottle (mL)</label>
+    <input id="volumeBottle" type="number" min="1" step="0.1" value="120" required />
+
+    <button id="calculate">Calculate</button>
+  </form>
+
+  <div id="results" class="results" aria-live="polite">
+    <div class="small">Enter values and click <strong>Calculate</strong>.</div>
+  </div>
+
+<script>
+(function(){
+  const form = document.getElementById('calcForm');
+  const btn = document.getElementById('calculate');
+  const out = document.getElementById('results');
+
+  function format(n){ return Number(n).toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2}); }
+
+  btn.addEventListener('click', function(){
+    const numBottles = parseFloat(document.getElementById('numBottles').value);
+    const volumeBottle = parseFloat(document.getElementById('volumeBottle').value);
+
+    if (!isFinite(numBottles) || numBottles <= 0 || !isFinite(volumeBottle) || volumeBottle <= 0) {
+      out.innerHTML = '<div style="color:#b00020">Please enter positive numbers for both fields.</div>';
+      return;
+    }
+
+    const correctionFactor = 1.02;
+    const totalMixture = numBottles * volumeBottle * correctionFactor; // grams (mL ~ g)
+    const formulaPowder = totalMixture / 7.72125;
+    const waterAmount = totalMixture - formulaPowder;
+
+    out.innerHTML = `
+      <div><strong>Total mixture:</strong> ${format(totalMixture)} g</div>
+      <div><strong>Formula powder:</strong> ${format(formulaPowder)} g</div>
+      <div><strong>Water:</strong> ${format(waterAmount)} g</div>
+      <div class="small" style="margin-top:8px">Formula used: total = bottles × volume × 1.02; formula = total ÷ 7.72125</div>
+    `;
+  });
+})();
+</script>
+</body>
+</html>
