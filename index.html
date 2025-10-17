@@ -28,21 +28,13 @@
       border: 1px solid #ddd;
       border-radius: 6px;
     }
-    button {
-      margin-top: 12px;
-      padding: 10px 14px;
-      border: 0;
-      background: #0066cc;
-      color: white;
-      border-radius: 8px;
-      cursor: pointer;
-    }
     .results {
       margin-top: 16px;
       padding: 12px;
       border-radius: 8px;
       background: #f7f9fc;
       border: 1px solid #e6edf7;
+      min-height: 60px;
     }
     .small {
       font-size: 0.9rem;
@@ -63,26 +55,25 @@
 
     <label for="volumeBottle">Volume per bottle (mL)</label>
     <input id="volumeBottle" type="number" min="1" step="0.1" value="105" required />
-
-    <button id="calculate">Calculate</button>
   </form>
 
   <div id="results" class="results" aria-live="polite">
-    <div class="small">Enter values and click <strong>Calculate</strong>.</div>
+    <div class="small">Enter values to see the results.</div>
   </div>
 
   <script>
     (function () {
-      const btn = document.getElementById('calculate');
+      const numBottlesInput = document.getElementById('numBottles');
+      const volumeBottleInput = document.getElementById('volumeBottle');
       const out = document.getElementById('results');
 
       function format(n) {
         return Number(n).toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
       }
 
-      btn.addEventListener('click', function () {
-        const numBottles = parseFloat(document.getElementById('numBottles').value);
-        const volumeBottle = parseFloat(document.getElementById('volumeBottle').value);
+      function calculate() {
+        const numBottles = parseFloat(numBottlesInput.value);
+        const volumeBottle = parseFloat(volumeBottleInput.value);
 
         if (!isFinite(numBottles) || numBottles <= 0 || !isFinite(volumeBottle) || volumeBottle <= 0) {
           out.innerHTML = '<div style="color:#b00020">Please enter positive numbers for both fields.</div>';
@@ -100,7 +91,14 @@
           <div><strong>Total Mixture:</strong> ${format(totalMixture)} g</div>
           <div class="small" style="margin-top:8px">Formula: total = bottles × volume × 1.02; powder = total ÷ 7.72125</div>
         `;
-      });
+      }
+
+      // Calculate on input changes
+      numBottlesInput.addEventListener('input', calculate);
+      volumeBottleInput.addEventListener('input', calculate);
+
+      // Calculate on page load with default values
+      calculate();
     })();
   </script>
 </body>
